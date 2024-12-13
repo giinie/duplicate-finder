@@ -49,7 +49,7 @@ fun main(args: Array<String>) {
         val cmd = DefaultParser().parse(options, args)
         val defaults = mapOf(
             "output" to "./duplicate_finder_output",
-            "minSimilarity" to "0.8",
+            "minSimilarity" to "0.9",
             "minLength" to "100",
             "minDuplicates" to "1",
             "fileMask" to "",
