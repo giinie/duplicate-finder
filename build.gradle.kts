@@ -23,7 +23,6 @@ dependencies {
     implementation("org.commonmark:commonmark:0.22.0")
     implementation("it.unimi.dsi:fastutil:8.2.2")
     implementation("commons-cli:commons-cli:1.5.0")
-    implementation("com.google.guava:guava:32.0.0-jre")
 }
 
 tasks {
