@@ -32,7 +32,7 @@ fun main(args: Array<String>) {
     val options = Options().apply{
         listOf(
             Option("r", "root", true, "(required) content root path").apply { isRequired = true },
-            Option("i", "indexer", true, "indexer (line, file, xml, md, auto), default: auto"),
+            Option("i", "indexer", true, "indexer (line, file, xml, md, adoc, auto), default: auto"),
             Option("o", "output", true, "output file path"),
             Option("v", "verbose", false, "print verbose output"),
             Option("s", "minSimilarity", true, "minimum similarity"),
@@ -71,7 +71,7 @@ fun main(args: Array<String>) {
         val indexerOption = cmdOrDefault("indexer")
         val ngramLength = cmdOrDefault("gram").toInt()
 
-        val availableIndexers = setOf("line", "file", "xml", "md", "auto")
+        val availableIndexers = setOf("line", "file", "xml", "md", "adoc", "auto")
         require(indexerOption in availableIndexers) {
             "Invalid indexer: $indexerOption. Allowed values are: $availableIndexers"
         }
@@ -80,6 +80,7 @@ fun main(args: Array<String>) {
             "file" -> IndexerType.FILE
             "xml" -> IndexerType.XML
             "md" -> IndexerType.MARKDOWN
+            "adoc" -> IndexerType.ASCIIDOC
             "auto" -> IndexerType.AUTO
             else -> {
                 System.err.println("Unsupported indexer: $indexerOption, defaulting to 'auto'")
