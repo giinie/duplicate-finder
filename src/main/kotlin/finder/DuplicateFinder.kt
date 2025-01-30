@@ -102,6 +102,10 @@ fun main(args: Array<String>) {
         )
 
         val report = indexAndFind(options)
+        if (verbose) {
+            println("Indexing took: ${report.indexDuration} ms")
+            println("Analysis took: ${report.analysisDuration} ms")
+        }
         printToFiles(report, options)
         if (!headless) {
             Ui(report, options).show()
