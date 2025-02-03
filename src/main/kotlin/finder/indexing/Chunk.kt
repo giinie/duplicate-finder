@@ -10,7 +10,7 @@ class Chunk(
     @Suppress("unused") val type: String,
 ) {
     val preview: String
-        get() = "$this – ${content.substring(0, 15)}..."
+        get() = if (content.length > 15) "$this – ${content.substring(0, 15)}..." else "$this – $content"
 
     override fun toString(): String {
         return "$path:$lineNumber"
