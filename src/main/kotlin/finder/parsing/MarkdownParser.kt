@@ -1,36 +1,29 @@
-package finder.indexing
+package finder.parsing
 
 import finder.*
 import org.commonmark.node.*
 import org.commonmark.parser.*
 import org.commonmark.renderer.text.TextContentRenderer
-import java.nio.file.Path
-import kotlin.io.path.readText
 
-class MarkdownIndexer(
-    options: DuplicateFinderOptions,
-): ContentIndexer(options) {
-    override fun indexFile(pathFromRoot: Path): Map<Length, Map<Ngram, List<Chunk>>> {
-        val path = root.resolve(pathFromRoot)
-        val parser = Parser
+class MarkdownParser(options: DuplicateFinderOptions): ContentParser(options) {
+
+    override fun parse(content: String): List<Element> {
+        val document = Parser
             .builder()
             .includeSourceSpans(IncludeSourceSpans.BLOCKS)
             .build()
-        val document = parser.parse(path.readText())
+            .parse(content)
 
-        val groupedByLength = mutableMapOf<Int, MutableMap<String, MutableList<Chunk>>>()
+        val elements = mutableListOf<Element>()
 
-        fun addElement(block: Block, type: String) {
-            val content = TextContentRenderer.builder().build().render(block)
+        fun addElement(markdownBlock: Block, type: String) {
+            val content = TextContentRenderer.builder().build().render(markdownBlock)
             if (content.length < options.minLength) return
-            val ngramIndex = groupedByLength.getOrPut(content.length) { mutableMapOf() }
-            ngramIndex.indexChunk(
+            elements.add(Element(
                 content = content,
-                path = pathFromRoot.toString(),
-                lineNumber = block.sourceSpans.first().lineIndex,
-                type = type,
-                options = options
-            )
+                lineNumber = markdownBlock.sourceSpans.first().lineIndex,
+                type = type
+            ))
         }
 
         document.accept(object : AbstractVisitor() {
@@ -47,6 +40,6 @@ class MarkdownIndexer(
             override fun visit(customBlock: CustomBlock) = addElement(customBlock, "md_custom_block")
         })
 
-        return groupedByLength
+        return elements
     }
 }

@@ -23,10 +23,12 @@ class IntegrationTest {
         main(
             args = arrayOf(
                 "-r=$TEST_DATA_DIR",
-                "-i=line",
+                "-p=line",
                 "-o=$TEST_OUTPUT_DIR",
                 "-s=0.8",
-                "-l=50"
+                "-l=50",
+                "-v",
+                "-h"
             )
         )
 

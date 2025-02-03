@@ -1,6 +1,6 @@
-package finder.indexing
+package finder.parsing
 
-enum class IndexerType {
+enum class ParserType {
     FILE,
     LINE,
     MARKDOWN,

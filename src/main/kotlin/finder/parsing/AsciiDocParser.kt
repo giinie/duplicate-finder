@@ -1,46 +1,50 @@
 package finder.parsing
 
-import java.nio.file.Path
-import kotlin.io.path.readLines
+import finder.DuplicateFinderOptions
 
-data class AsciiDocChunk(val type: String, val content: String, val lineNumber: Int)
+class AsciiDocParser(options: DuplicateFinderOptions): ContentParser(options) {
 
-class AsciiDocParser {
-    fun parse(path: Path): List<AsciiDocChunk> {
-        val lines = path.readLines()
-        val chunks = mutableListOf<AsciiDocChunk>()
-        var currentBlock = mutableListOf<Pair<String, Int>>()  // Pair of line content and line number
+    override fun parse(content: String): List<Element> {
+        val lines = content.lines()
+        val elements = mutableListOf<Element>()
+        var currentBlock = mutableListOf<Pair<String, Int>>()
         var inCodeBlock = false
         var inTable = false
         var tableHeader = true
         var skipUntilLine = -1  // Track which lines to skip for multi-line table rows
 
+        fun addBlock(content: String, startLine: Int, type: String) {
+            if (content.length >= minLength) {
+                elements.add(Element(content, startLine, type))
+            }
+        }
+
         fun processCurrentBlock() {
             if (currentBlock.isEmpty()) return
 
-            val content = currentBlock.map { it.first }.joinToString("\n").trim()
+            val content = currentBlock.joinToString("\n") { it.first }.trim()
             val startLine = currentBlock.first().second
             if (content.isNotEmpty()) {
                 when {
                     content.startsWith("= ") -> {
                         // Extract only the first line as the document title
                         val title = content.removePrefix("= ").lines().first().trim()
-                        chunks.add(AsciiDocChunk("adoc_section_0", title, startLine))
+                        addBlock(title, startLine, "adoc_section_0")
 
                         // Process remaining lines as a separate paragraph if they exist
                         val remainingLines = content.lines().drop(1).joinToString("\n").trim()
                         if (remainingLines.isNotEmpty()) {
-                            chunks.add(AsciiDocChunk("adoc_metadata", remainingLines, startLine + 1))
+                            addBlock(remainingLines, startLine + 1, "adoc_metadata")
                         }
                     }
-                    content.startsWith("== ") -> chunks.add(AsciiDocChunk("adoc_section_1", content.removePrefix("== ").trim(), startLine))
-                    content.startsWith("=== ") -> chunks.add(AsciiDocChunk("adoc_section_2", content.removePrefix("=== ").trim(), startLine))
-                    content.startsWith("==== ") -> chunks.add(AsciiDocChunk("adoc_section_3", content.removePrefix("==== ").trim(), startLine))
+                    content.startsWith("== ") -> addBlock(content.removePrefix("== ").trim(), startLine, "adoc_section_1")
+                    content.startsWith("=== ") -> addBlock(content.removePrefix("=== ").trim(), startLine, "adoc_section_2")
+                    content.startsWith("==== ") -> addBlock(content.removePrefix("==== ").trim(), startLine, "adoc_section_3")
                     content.startsWith("* ") || content.startsWith("** ") -> {
                         content.lines().forEachIndexed { index, line ->
                             val itemContent = line.trim().removePrefix("*").removePrefix("*").trim()
                             if (itemContent.isNotEmpty()) {
-                                chunks.add(AsciiDocChunk("adoc_list_item", itemContent, startLine + index))
+                                addBlock(itemContent, startLine + index, "adoc_list_item")
                             }
                         }
                     }
@@ -54,13 +58,13 @@ class AsciiDocParser {
                             if (line.trim().startsWith("* ")) {
                                 // If we have accumulated paragraph content, add it first
                                 if (currentParagraph.isNotEmpty()) {
-                                    chunks.add(AsciiDocChunk("adoc_paragraph", currentParagraph.joinToString("\n"), currentLineNumber))
+                                    addBlock(currentParagraph.joinToString("\n"), currentLineNumber, "adoc_paragraph")
                                     currentParagraph.clear()
                                 }
                                 // Add the list item
                                 val itemContent = line.trim().removePrefix("*").trim()
                                 if (itemContent.isNotEmpty()) {
-                                    chunks.add(AsciiDocChunk("adoc_list_item", itemContent, currentLineNumber))
+                                    addBlock(itemContent, currentLineNumber, "adoc_list_item")
                                 }
                             } else {
                                 currentParagraph.add(line)
@@ -70,7 +74,7 @@ class AsciiDocParser {
 
                         // Add any remaining paragraph content
                         if (currentParagraph.isNotEmpty()) {
-                            chunks.add(AsciiDocChunk("adoc_paragraph", currentParagraph.joinToString("\n"), startLine))
+                            addBlock(currentParagraph.joinToString("\n"), startLine, "adoc_paragraph")
                         }
                     }
                 }
@@ -82,7 +86,7 @@ class AsciiDocParser {
             when {
                 line.startsWith(".") -> {
                     processCurrentBlock()
-                    chunks.add(AsciiDocChunk("adoc_table_title", line.removePrefix(".").trim(), lineNumber + 1))
+                    addBlock(line.removePrefix(".").trim(), lineNumber + 1, "adoc_table_title")
                 }
                 line == "|===" -> {
                     processCurrentBlock()
@@ -91,9 +95,9 @@ class AsciiDocParser {
                 }
                 line == "----" -> {
                     if (inCodeBlock) {
-                        val codeContent = currentBlock.map { it.first }.joinToString("\n")
+                        val codeContent = currentBlock.joinToString("\n") { it.first }
                         if (codeContent.isNotEmpty()) {
-                            chunks.add(AsciiDocChunk("adoc_listing", codeContent, currentBlock.first().second))
+                            addBlock(codeContent, currentBlock.first().second, "adoc_listing")
                         }
                         currentBlock.clear()
                     }
@@ -106,7 +110,7 @@ class AsciiDocParser {
                             .split("|")
                             .filter { it.isNotEmpty() }
                             .joinToString(" | ") { it.trim() }
-                        chunks.add(AsciiDocChunk("adoc_table_header", headerContent, lineNumber + 1))
+                        addBlock(headerContent, lineNumber + 1, "adoc_table_header")
                         tableHeader = false
                     } else if (line.startsWith("|")) {
                         // Skip table boundary markers and already processed lines
@@ -131,7 +135,7 @@ class AsciiDocParser {
                             }
 
                             if (cells.isNotEmpty()) {
-                                chunks.add(AsciiDocChunk("adoc_table_row", cells.joinToString(" | "), lineNumber + 1))
+                                addBlock(cells.joinToString(" | "), lineNumber + 1, "adoc_table_row")
                                 // Set the skip line to after the last processed line
                                 skipUntilLine = currentLineIndex + 1
                             }
@@ -148,6 +152,6 @@ class AsciiDocParser {
         }
 
         processCurrentBlock()
-        return chunks
+        return elements
     }
 }

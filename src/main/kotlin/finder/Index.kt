@@ -1,7 +1,7 @@
 package finder
 
 import finder.indexing.Chunk
-import finder.indexing.indexer
+import finder.indexing.FileProcessor
 import java.nio.file.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -16,12 +16,12 @@ fun indexDirectory(
     val filesToIndex = filesToIndex(root, options)
     if (verbose) println("Indexing ${filesToIndex.size} files")
 
-    val indexer = indexer(options)
+    val fileProcessor = FileProcessor(options)
     filesToIndex.parallelStream()
         .peek { if (verbose) println("processing file ${fileCount.incrementAndGet()}: $it") }
         .forEach {
             val pathFromRoot = root.relativize(it)
-            val fileIndex = indexer.indexFile(pathFromRoot)
+            val fileIndex = fileProcessor.indexFile(pathFromRoot)
             mergeFileIndexIntoDirectoryIndex(fileIndex, directoryIndex)
         }
     return directoryIndex

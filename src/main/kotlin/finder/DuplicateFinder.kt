@@ -1,7 +1,7 @@
 package finder
 
-import finder.indexing.*
 import finder.output.printToFiles
+import finder.parsing.ParserType
 import finder.ui.Ui
 import java.nio.file.*
 import kotlin.collections.*
@@ -32,7 +32,7 @@ fun main(args: Array<String>) {
     val options = Options().apply{
         listOf(
             Option("r", "root", true, "(required) content root path").apply { isRequired = true },
-            Option("i", "indexer", true, "indexer (line, file, xml, md, adoc, auto), default: auto"),
+            Option("p", "parser", true, "parser (line, file, xml, md, adoc, auto), default: auto"),
             Option("o", "output", true, "output file path"),
             Option("v", "verbose", false, "print verbose output"),
             Option("s", "minSimilarity", true, "minimum similarity"),
@@ -53,7 +53,7 @@ fun main(args: Array<String>) {
             "minLength" to "100",
             "minDuplicates" to "1",
             "fileMask" to "",
-            "indexer" to "auto",
+            "parser" to "auto",
             "gram" to "3",
         )
 
@@ -68,23 +68,23 @@ fun main(args: Array<String>) {
         val verbose = cmd.hasOption("verbose")
         val headless = cmd.hasOption("headless")
         val lowMemory = cmd.hasOption("memory")
-        val indexerOption = cmdOrDefault("indexer")
+        val parserOption = cmdOrDefault("parser")
         val ngramLength = cmdOrDefault("gram").toInt()
 
-        val availableIndexers = setOf("line", "file", "xml", "md", "adoc", "auto")
-        require(indexerOption in availableIndexers) {
-            "Invalid indexer: $indexerOption. Allowed values are: $availableIndexers"
+        val availableParsers = setOf("line", "file", "xml", "md", "adoc", "auto")
+        require(parserOption in availableParsers) {
+            "Invalid parser: $parserOption. Allowed values are: $availableParsers"
         }
-        val indexer = when (indexerOption) {
-            "line" -> IndexerType.LINE
-            "file" -> IndexerType.FILE
-            "xml" -> IndexerType.XML
-            "md" -> IndexerType.MARKDOWN
-            "adoc" -> IndexerType.ASCIIDOC
-            "auto" -> IndexerType.AUTO
+        val parser = when (parserOption) {
+            "line" -> ParserType.LINE
+            "file" -> ParserType.FILE
+            "xml" -> ParserType.XML
+            "md" -> ParserType.MARKDOWN
+            "adoc" -> ParserType.ASCIIDOC
+            "auto" -> ParserType.AUTO
             else -> {
-                System.err.println("Unsupported indexer: $indexerOption, defaulting to 'auto'")
-                IndexerType.AUTO
+                System.err.println("Unsupported parser: $parserOption, defaulting to 'auto'")
+                ParserType.AUTO
             }
         }
 
@@ -94,7 +94,7 @@ fun main(args: Array<String>) {
             minLength,
             minDuplicates,
             fileMask,
-            indexer,
+            parser,
             verbose,
             lowMemory,
             ngramLength,

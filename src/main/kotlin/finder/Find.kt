@@ -1,7 +1,7 @@
 package finder
 
-import finder.indexing.*
 import finder.ngram.ngramProvider
+import finder.indexing.Chunk
 import finder.similarity.similarityRatio
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import java.util.concurrent.atomic.AtomicInteger

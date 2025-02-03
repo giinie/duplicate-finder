@@ -1,12 +1,11 @@
 package finder.ui.heatmap
 
-import finder.indexing.*
 import finder.mockChunkOf
 import finder.mockOptionsForNgramLength
+import finder.indexing.Chunk
 import org.junit.jupiter.api.Test
 
 private val options = mockOptionsForNgramLength(3)
-
 
 private val oddLength = mockChunkOf("cat")
 private val anotherOddLength = mockChunkOf("dog")

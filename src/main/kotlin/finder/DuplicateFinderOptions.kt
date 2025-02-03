@@ -1,6 +1,6 @@
 package finder
 
-import finder.indexing.*
+import finder.parsing.ParserType
 import java.nio.file.Path
 import kotlin.io.path.extension
 
@@ -10,7 +10,7 @@ data class DuplicateFinderOptions(
     val minLength: Int,
     val minDuplicates: Int,
     val fileMask: Set<String>,
-    val indexerType: IndexerType,
+    val parserType: ParserType,
     val verbose: Boolean,
     val lowMemory: Boolean,
     val ngramLength: Int,

@@ -1,5 +1,8 @@
 package finder.indexing
 
+import finder.parsing.Element
+import java.nio.file.Path
+
 class Chunk(
     val content: String,
     val path: String,
@@ -25,10 +28,13 @@ class Chunk(
         return true
     }
 
-    
     override fun hashCode(): Int {
         var result = path.hashCode()
         result = 31 * result + lineNumber
         return result
+    }
+
+    companion object {
+        fun of(element: Element, pathFromRoot: Path) = Chunk(element.content, pathFromRoot.toString(), element.lineNumber, element.type)
     }
 }
