@@ -1,0 +1,21 @@
+<document>
+    Dangling text within a doc
+    <p>This is paragraph 1</p>
+    <p>This is paragraph 2 with <code>inline code</code></p>
+    <p>This is paragraph 3</p>
+    <p>This is paragraph 4</p>
+    <p>This is paragraph 5</p>
+    <chapter>
+        Dangling text within a chapter
+        <p>This is a paragraph within a chapter</p>
+        <list>
+            <li>List item 1</li>
+            <li>List item 2</li>
+            <li>List item 3</li>
+            <li>List item 4</li>
+            <li>List item 5 with <code>inline code</code></li>
+        </list>
+    </chapter>
+    <p>-</p>
+<!--    comment should not be parsed -->
+</document>
