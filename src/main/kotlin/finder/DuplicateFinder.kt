@@ -103,8 +103,8 @@ fun main(args: Array<String>) {
 
         val report = indexAndFind(options)
         if (verbose) {
-            println("Indexing took: ${report.indexDuration} ms")
-            println("Analysis took: ${report.analysisDuration} ms")
+            println("Indexing took: ${report.indexDuration}")
+            println("Analysis took: ${report.analysisDuration}")
         }
         printToFiles(report, options)
         if (!headless) {
