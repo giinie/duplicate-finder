@@ -14,8 +14,11 @@ class XmlParser(
     val skipTags: List<String> = emptyList(),
 ) : ContentParser(options) {
     override fun parse(content: String): List<Element> {
-        val xmlInputFactory = XMLInputFactory.newInstance()
-        val xmlStreamReader = xmlInputFactory.createXMLStreamReader(StringReader(content))
+        val xmlStreamReader = XMLInputFactory.newInstance().apply {
+            setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false)
+            setProperty(XMLInputFactory.SUPPORT_DTD, false)
+        }.createXMLStreamReader(StringReader(content))
+
         val elements = mutableListOf<Element>()
         val stack = ArrayDeque<Tag>()
 
@@ -51,7 +54,7 @@ class XmlParser(
                 }
             }
         }
-        
+
         return elements
     }
 }
