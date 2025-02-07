@@ -1,6 +1,7 @@
 package finder
 
 import finder.output.printToFiles
+import finder.indexing.Index
 import finder.parsing.ParserType
 import finder.ui.Ui
 import java.nio.file.*
@@ -8,18 +9,15 @@ import kotlin.collections.*
 import org.apache.commons.cli.*
 import java.io.PrintWriter
 import kotlin.system.exitProcess
+import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
 private const val DOCUMENTATION_URL = "https://flounder.dev/duplicate-finder/"
 
 fun indexAndFind(options: DuplicateFinderOptions): DuplicateFinderReport {
-    val (directoryIndex, indexDuration) = measureTimedValue {
-        indexDirectory(options)
-    }
-
-    val (duplicates, findDuration) = measureTimedValue {
-        find(directoryIndex, options)
-    }
+    val index = Index.getInstance(options)
+    val indexDuration = measureTime { index.indexDirectory() }
+    val (duplicates, findDuration) = measureTimedValue { findAll(options) }
 
     return DuplicateFinderReport(
         duplicates,

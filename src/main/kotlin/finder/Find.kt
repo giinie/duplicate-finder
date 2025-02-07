@@ -1,7 +1,7 @@
 package finder
 
 import finder.ngram.ngramProvider
-import finder.indexing.Chunk
+import finder.indexing.*
 import finder.similarity.similarityRatio
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -10,12 +10,12 @@ import java.util.stream.Collectors
 import kotlin.collections.*
 import kotlin.math.max
 
-fun find(
-    directoryIndex: Map<Length, Map<Ngram, List<Chunk>>>,
+fun findAll(
     options: DuplicateFinderOptions
 ): Map<Chunk, List<Chunk>> {
     val (_, _, _, minDuplicates, _, _, verbose) = options
-    val chunksFlat = directoryIndex.values.flatMap { it.values }.flatten().distinct()
+    val index = Index.getInstance(options)
+    val chunksFlat = index.chunksFlat()
     val processedChunksCount = AtomicInteger(0)
     return chunksFlat.parallelStream()
         .collect(
@@ -25,7 +25,7 @@ fun find(
                     if (verbose && processedChunksCount.incrementAndGet() % 100 == 0) {
                         println("Searching duplicates for chunk ${processedChunksCount.get()}/${chunksFlat.size}")
                     }
-                    findInLengthIndex(it, directoryIndex, options)
+                    findForChunk(it, options)
                 },
                 { _, _ -> throw RuntimeException("Chunk already analyzed") },
             )
@@ -33,25 +33,25 @@ fun find(
         .filter { it.value.size >= minDuplicates.coerceAtLeast(1) }
 }
 
-private fun findInLengthIndex(
+private fun findForChunk(
     referenceChunk: Chunk,
-    directoryIndex: Map<Length, Map<Ngram, List<Chunk>>>,
     options: DuplicateFinderOptions,
 ): List<Chunk> {
+    val index = Index.getInstance(options)
     val length = referenceChunk.content.length
     val margin = (length - (length * options.minSimilarity)).toInt()
     val minLength = length - margin
     val maxLength = length + margin
     return buildList {
-        directoryIndex.filter { (length, _) -> length in minLength..maxLength }
-            .forEach { (_, indexForLength) ->
-                val resultsForLength = findInNgramIndex(referenceChunk, indexForLength, options)
-                addAll(resultsForLength)
-            }
+        (minLength..maxLength).forEach { length ->
+            val indexForLength = index.getForLength(length)
+            val resultsForLength = findForChunk(referenceChunk, indexForLength, options)
+            addAll(resultsForLength)
+        }
     }
 }
 
-private fun findInNgramIndex(
+private fun findForChunk(
     referenceChunk: Chunk,
     index: Map<Ngram, List<Chunk>>,
     options: DuplicateFinderOptions
