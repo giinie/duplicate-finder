@@ -5,7 +5,7 @@ import finder.parsing.ParserType.*
 
 const val autoDetectFailMessage = ("""
 Couldn't match parser type by file mask, defaulting to 'file' parser.
-Use the '-i' command-line option to specify the parser type explicitly.
+Use the '-p' command-line option to specify the parser type explicitly.
 """)
 
 val markdownFileExtensions = setOf("md", "mdx")
