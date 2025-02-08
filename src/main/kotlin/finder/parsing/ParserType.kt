@@ -6,5 +6,6 @@ enum class ParserType {
     MARKDOWN,
     XML,
     ASCIIDOC,
+    PROPERTIES,
     AUTO
 }

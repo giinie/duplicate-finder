@@ -30,7 +30,7 @@ fun main(args: Array<String>) {
     val options = Options().apply{
         listOf(
             Option("r", "root", true, "(required) content root path").apply { isRequired = true },
-            Option("p", "parser", true, "parser (line, file, xml, md, adoc, auto), default: auto"),
+            Option("p", "parser", true, "parser (line, file, xml, md, adoc, properties, auto), default: auto"),
             Option("o", "output", true, "output file path"),
             Option("v", "verbose", false, "print verbose output"),
             Option("s", "minSimilarity", true, "minimum similarity"),
@@ -69,7 +69,7 @@ fun main(args: Array<String>) {
         val parserOption = cmdOrDefault("parser")
         val ngramLength = cmdOrDefault("gram").toInt()
 
-        val availableParsers = setOf("line", "file", "xml", "md", "adoc", "auto")
+        val availableParsers = setOf("line", "file", "xml", "md", "adoc", "properties", "auto")
         require(parserOption in availableParsers) {
             "Invalid parser: $parserOption. Allowed values are: $availableParsers"
         }
@@ -79,6 +79,7 @@ fun main(args: Array<String>) {
             "xml" -> ParserType.XML
             "md" -> ParserType.MARKDOWN
             "adoc" -> ParserType.ASCIIDOC
+            "properties" -> ParserType.PROPERTIES
             "auto" -> ParserType.AUTO
             else -> {
                 System.err.println("Unsupported parser: $parserOption, defaulting to 'auto'")
