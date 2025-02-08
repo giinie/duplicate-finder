@@ -91,7 +91,7 @@ class Ui(
         border = null
     }
 
-    val toolbar = JPanel().apply {
+    val toolbar: JPanel = JPanel().apply {
         layout = GridBagLayout()
         val sortByLabel = JLabel("Sort by:").apply { horizontalAlignment = SwingConstants.RIGHT }
         val sortByComboBox = JComboBox(SortBy.entries.toTypedArray()).apply {
@@ -114,15 +114,20 @@ class Ui(
             addActionListener { listsData.showInClusters(isSelected) }
         }
 
+        val textSearchButton = JButton("Text search").apply {
+            addActionListener { TextSearchDialog(frame, fontSizeSlider.value, options).isVisible = true }
+        }
+
         add(sortByLabel, toolbarPosition(0))
         add(sortByComboBox, toolbarPosition(1))
         add(showInClustersLabel, toolbarPosition(2))
         add(clusterCheckBox, toolbarPosition(3))
         add(fontSizeLabel, toolbarPosition(4))
         add(fontSizeSlider, toolbarPosition(5))
+        add(textSearchButton, toolbarPosition(6))
     }
 
-    fun show() = JFrame().apply {
+    val frame = JFrame().apply {
         layout = BorderLayout()
         add(toolbar, BorderLayout.NORTH)
         add(mainSplitPane, BorderLayout.CENTER)
@@ -131,7 +136,10 @@ class Ui(
         val screenSize = Toolkit.getDefaultToolkit().screenSize
         size = Dimension(screenSize.width, screenSize.height)
         extendedState = JFrame.MAXIMIZED_BOTH
-        isVisible = true
+    }
+
+    fun show() {
+        frame.isVisible = true
     }
 }
 

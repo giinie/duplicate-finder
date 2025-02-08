@@ -21,4 +21,6 @@ data class DuplicateFinderOptions(
     fun fileMaskIncludesOnly(extension: String) = fileMask.size == 1 && fileMask.single() == extension
 
     fun fileMaskIsSubsetOf(extensions: Set<String>) = (fileMask - extensions).isEmpty()
+
+    fun withMinSimilarity(d: Double): DuplicateFinderOptions = copy(minSimilarity = d)
 }

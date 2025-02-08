@@ -33,7 +33,7 @@ fun findAll(
         .filter { it.value.size >= minDuplicates.coerceAtLeast(1) }
 }
 
-private fun findForChunk(
+fun findForChunk(
     referenceChunk: Chunk,
     options: DuplicateFinderOptions,
 ): List<Chunk> {
