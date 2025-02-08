@@ -115,6 +115,12 @@ class Ui(
         }
 
         val textSearchButton = JButton("Text search").apply {
+            isEnabled = !options.lowMemory
+            toolTipText = if (options.lowMemory) {
+                "Text search is not available in low memory mode"
+            } else {
+                "Fuzzy search based on text query"
+            }
             addActionListener { TextSearchDialog(frame, fontSizeSlider.value, options).isVisible = true }
         }
 
