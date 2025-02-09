@@ -41,7 +41,7 @@ fun main(args: Array<String>) {
             Option("m", "memory", false, "run in low-memory mode"),
             Option("g", "gram", false, "ngram length"),
             Option("w", "keep-whitespace", false, "parse without normalizing whitespace"),
-            Option("i", "inline-nested", false, "inline nested content in the enclosing elements"),
+            Option("i", "inline", false, "inline nested content in the enclosing elements"),
         ).forEach(::addOption)
     }
 
@@ -71,7 +71,7 @@ fun main(args: Array<String>) {
         val keepWhitespace = cmd.hasOption("keep-whitespace")
         val parserOption = cmdOrDefault("parser")
         val ngramLength = cmdOrDefault("gram").toInt()
-        val inlineNested = cmd.hasOption("inline-nested")
+        val inlineNested = cmd.hasOption("inline")
 
         val availableParsers = setOf("line", "file", "xml", "md", "adoc", "properties", "auto")
         require(parserOption in availableParsers) {
