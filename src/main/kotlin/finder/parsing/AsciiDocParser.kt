@@ -13,11 +13,7 @@ class AsciiDocParser(options: DuplicateFinderOptions): ContentParser(options) {
         var tableHeader = true
         var skipUntilLine = -1  // Track which lines to skip for multi-line table rows
 
-        fun addBlock(content: String, startLine: Int, type: String) {
-            if (content.length >= minLength) {
-                elements.add(Element(content, startLine, type))
-            }
-        }
+        fun addBlock(content: String, startLine: Int, type: String) = elements.add(Element(content, startLine, type))
 
         fun processCurrentBlock() {
             if (currentBlock.isEmpty()) return

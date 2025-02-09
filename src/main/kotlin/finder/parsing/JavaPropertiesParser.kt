@@ -14,9 +14,7 @@ class JavaPropertiesParser(options: DuplicateFinderOptions) : ContentParser(opti
             val separatorIndex = line.indexOf('=')
             if (separatorIndex > 0) {
                 val value = line.substring(separatorIndex + 1).trim()
-                if (value.length >= minLength) {
-                    Element(value, lineNumber, "java_property")
-                } else null
+                Element(value, lineNumber, "java_property")
             } else null
         }
 }

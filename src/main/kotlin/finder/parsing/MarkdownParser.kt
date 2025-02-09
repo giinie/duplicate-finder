@@ -18,7 +18,6 @@ class MarkdownParser(options: DuplicateFinderOptions): ContentParser(options) {
 
         fun addElement(markdownBlock: Block, type: String) {
             val content = TextContentRenderer.builder().build().render(markdownBlock)
-            if (content.length < options.minLength) return
             elements.add(Element(
                 content = content,
                 lineNumber = markdownBlock.sourceSpans.first().lineIndex,
