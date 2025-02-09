@@ -17,6 +17,7 @@ class FileProcessor(val options: DuplicateFinderOptions) {
             val normalize = !options.keepWhitespace
             parser.parse(content)
                 .map { if (normalize) normalizeWhitespace(it) else it }
+                .filter { it.content.length >= options.minLength }
                 .map { Chunk.of(it, pathFromRoot) }
         } catch (e: Exception) {
             if (options.verbose) System.err.println("Error parsing file: $path ${e.javaClass.name}")

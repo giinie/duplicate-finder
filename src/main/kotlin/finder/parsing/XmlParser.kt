@@ -9,6 +9,8 @@ class Tag(val name: String) {
     val contentBuilder = StringBuilder()
 }
 
+private const val NESTED_TAG_PLACEHOLDER = "</>"
+
 class XmlParser(
     options: DuplicateFinderOptions,
     val skipTags: List<String> = emptyList(),
@@ -26,20 +28,24 @@ class XmlParser(
             when (xmlStreamReader.next()) {
                 XMLStreamConstants.START_ELEMENT -> {
                     val tag = Tag(xmlStreamReader.localName)
+                    if (!(options.inlineNested || stack.isEmpty())) {
+                        stack.last().contentBuilder.append(NESTED_TAG_PLACEHOLDER)
+                    }
                     stack.addLast(tag)
                 }
 
                 XMLStreamConstants.CHARACTERS -> {
-                    stack.last().contentBuilder.append(xmlStreamReader.text)
+                    if (options.inlineNested) {
+                        stack.forEach { it.contentBuilder.append(xmlStreamReader.text) }
+                    } else {
+                        stack.last().contentBuilder.append(xmlStreamReader.text)
+                    }
                 }
 
                 XMLStreamConstants.END_ELEMENT -> {
                     val tag = stack.removeLast()
-                    if (tag.contentBuilder.length < options.minLength) {
-                        continue
-                    }
                     if (tag.name == xmlStreamReader.localName
-                        && tag.contentBuilder.isNotBlank()
+                        && tag.contentBuilder.toString().replace(NESTED_TAG_PLACEHOLDER, "").isNotBlank()
                         && tag.name !in skipTags
                     ) {
                         val tagContent = tag.contentBuilder.toString().trim()
