@@ -13,10 +13,11 @@ fun mockOptionsForNgramLength(length: Int) = DuplicateFinderOptions(
     lowMemory = false,
     ngramLength = length,
     outputDirectory = Path.of("./"),
-    parserType = ParserType.AUTO
+    parserType = ParserType.AUTO,
+    keepWhitespace = false
 )
 
-fun mockOptions() =  DuplicateFinderOptions(
+fun mockOptions() = DuplicateFinderOptions(
     root = Path.of("./"),
     minSimilarity = 0.8,
     minLength = 5,
@@ -26,5 +27,6 @@ fun mockOptions() =  DuplicateFinderOptions(
     lowMemory = false,
     ngramLength = 3,
     outputDirectory = Path.of("./"),
-    parserType = ParserType.AUTO
+    parserType = ParserType.AUTO,
+    keepWhitespace = false
 )

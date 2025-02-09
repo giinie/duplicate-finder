@@ -14,7 +14,8 @@ data class DuplicateFinderOptions(
     val verbose: Boolean,
     val lowMemory: Boolean,
     val ngramLength: Int,
-    val outputDirectory: Path
+    val outputDirectory: Path,
+    val keepWhitespace: Boolean,
 ) {
     fun fileMaskIncludes(path: Path) = fileMask.isEmpty() || path.extension in fileMask
 

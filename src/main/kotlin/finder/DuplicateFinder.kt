@@ -40,6 +40,7 @@ fun main(args: Array<String>) {
             Option("h", "headless", false, "run in headless mode"),
             Option("m", "memory", false, "run in low-memory mode"),
             Option("g", "gram", false, "ngram length"),
+            Option("w", "keep-whitespace", false, "parse without normalizing whitespace"),
         ).forEach(::addOption)
     }
 
@@ -66,6 +67,7 @@ fun main(args: Array<String>) {
         val verbose = cmd.hasOption("verbose")
         val headless = cmd.hasOption("headless")
         val lowMemory = cmd.hasOption("memory")
+        val keepWhitespace = cmd.hasOption("keep-whitespace")
         val parserOption = cmdOrDefault("parser")
         val ngramLength = cmdOrDefault("gram").toInt()
 
@@ -97,7 +99,8 @@ fun main(args: Array<String>) {
             verbose,
             lowMemory,
             ngramLength,
-            outputPath
+            outputPath,
+            keepWhitespace
         )
 
         val report = indexAndFind(options)
