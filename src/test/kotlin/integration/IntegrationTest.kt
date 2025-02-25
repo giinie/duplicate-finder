@@ -28,7 +28,8 @@ class IntegrationTest {
                 "-s=0.8",
                 "-l=50",
                 "-v",
-                "-h"
+                "-h",
+                "-w"
             )
         )
 

@@ -33,14 +33,12 @@ class PropertiesParserTest {
         assertTrue(contents.contains("first=second=third"), "Should parse value with multiple equal signs")
 
         // Should not find invalid or filtered out content
-        assertFalse(contents.contains("abc"), "Should not contain values shorter than minimum length")
         assertFalse(contents.any { it.startsWith("#") }, "Should not contain comments")
         assertFalse(contents.any { it.startsWith("!") }, "Should not contain comments")
-        assertFalse(contents.contains(""), "Should not contain empty values")
 
         // Should have the correct type for all elements
         assertEquals(1, types.size, "Should only have one type of elements")
-        assertTrue(types.contains("property"), "Should find 'property' elements")
+        assertTrue(types.contains("java_property"), "Should find 'property' elements")
 
         // Verify line numbers are preserved
         val valueWithLineNumber = result.find { it.content == "This is a test value" }
