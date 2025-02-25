@@ -94,7 +94,7 @@ fun main(args: Array<String>) {
         val options = DuplicateFinderOptions(
             root,
             minSimilarity,
-            minLength,
+            minLength.coerceAtLeast(ngramLength),
             minDuplicates,
             fileMask,
             parser,
