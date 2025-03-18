@@ -3,19 +3,18 @@ import java.net.URL
 import java.io.File
 
 plugins {
-    kotlin("jvm") version "2.0.10"
-    id("application")
+    kotlin("jvm")
+    id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 group = "dev.flounder"
 version = "1.0"
 
-application {
-    mainClass.set("finder.DuplicateFinderKt")
-}
-
 repositories {
     mavenCentral()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    google()
 }
 
 dependencies {
@@ -23,6 +22,9 @@ dependencies {
     implementation("org.commonmark:commonmark:0.22.0")
     implementation("it.unimi.dsi:fastutil:8.2.2")
     implementation("commons-cli:commons-cli:1.5.0")
+    implementation(compose.desktop.currentOs)
+    implementation(compose.material3)
+
 }
 
 tasks {
@@ -72,8 +74,5 @@ tasks {
 }
 
 kotlin {
-    jvmToolchain(16)
+    jvmToolchain(21)
 }
-
-
-

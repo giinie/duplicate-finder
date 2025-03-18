@@ -3,6 +3,7 @@ package finder.ui.heatmap
 import finder.mockChunkOf
 import finder.mockOptionsForNgramLength
 import finder.indexing.Chunk
+import finder.ui.utils.charScores
 import org.junit.jupiter.api.Test
 
 private val options = mockOptionsForNgramLength(3)

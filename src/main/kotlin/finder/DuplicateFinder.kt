@@ -3,7 +3,8 @@ package finder
 import finder.output.printToFiles
 import finder.indexing.Index
 import finder.parsing.ParserType
-import finder.ui.Ui
+import finder.ui.swing.SwingUi
+import finder.ui.compose.composeUi
 import java.nio.file.*
 import kotlin.collections.*
 import org.apache.commons.cli.*
@@ -37,7 +38,7 @@ fun main(args: Array<String>) {
             Option("l", "minLength", true, "minimum length"),
             Option("d", "minDuplicates", true, "minimum duplicates"),
             Option("f", "fileMask", true, "file mask"),
-            Option("h", "headless", false, "run in headless mode"),
+            Option("ui", "ui", true, "UI to use (swing, compose, none), default: compose"),
             Option("m", "memory", false, "run in low-memory mode"),
             Option("g", "gram", false, "ngram length"),
             Option("w", "keepWhitespace", false, "parse without normalizing whitespace"),
@@ -55,6 +56,7 @@ fun main(args: Array<String>) {
             "fileMask" to "",
             "parser" to "auto",
             "gram" to "3",
+            "ui" to "compose",
         )
 
         fun cmdOrDefault(name: String) = cmd.getOptionValue(name) ?: defaults[name] ?: error("No default")
@@ -66,7 +68,7 @@ fun main(args: Array<String>) {
         val minDuplicates = cmdOrDefault("minDuplicates").toInt()
         val fileMask = cmdOrDefault("fileMask").split(",").filter { it.isNotEmpty() }.toSet()
         val verbose = cmd.hasOption("verbose")
-        val headless = cmd.hasOption("headless")
+        val ui = cmdOrDefault("ui")
         val lowMemory = cmd.hasOption("memory")
         val keepWhitespace = cmd.hasOption("keepWhitespace")
         val parserOption = cmdOrDefault("parser")
@@ -112,8 +114,9 @@ fun main(args: Array<String>) {
             println("Analysis took: ${report.analysisDuration}")
         }
         printToFiles(report, options)
-        if (!headless) {
-            Ui(report, options).show()
+        when (ui) {
+            "swing" -> SwingUi(report, options).show()
+            "compose" -> composeUi(report, options)
         }
 
     } catch (e: ParseException) {

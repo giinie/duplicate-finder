@@ -1,10 +1,10 @@
-package finder.sort
+package finder.ui.sort
 
 import finder.DuplicateFinderOptions
 import finder.indexing.Chunk
 import finder.ngram.ngramProvider
 import finder.similarity.similarityRatio
-import finder.sort.SortBy.*
+import finder.ui.sort.SortBy.*
 
 fun chunkComparator(
     sortBy: SortBy,
