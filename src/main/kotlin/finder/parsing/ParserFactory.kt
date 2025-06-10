@@ -16,13 +16,13 @@ fun parser(options: DuplicateFinderOptions) = when (options.parserType) {
     LINE        -> LineParser(options)
     MARKDOWN    -> MarkdownParser(options)
     XML         -> XmlParser(options)
-    ASCIIDOC    -> AsciiDocParser(options)
+    ASCIIDOC    -> AsciiDocIndexer(options)
     PROPERTIES  -> JavaPropertiesParser(options)
     AUTO -> {
         when {
             options.fileMaskIncludesOnly("xml") -> XmlParser(options)
             options.fileMaskIsSubsetOf(markdownFileExtensions) -> MarkdownParser(options)
-            options.fileMaskIsSubsetOf(asciidocFileExtensions) -> AsciiDocParser(options)
+            options.fileMaskIsSubsetOf(asciidocFileExtensions) -> AsciiDocIndexer(options)
             options.fileMaskIncludesOnly("properties") -> JavaPropertiesParser(options)
             else -> {
                 System.err.println(autoDetectFailMessage)
